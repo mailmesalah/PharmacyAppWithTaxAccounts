@@ -1,0 +1,133 @@
+﻿<Window x:Class="WpfClientApp.Barcode.PrintBarcode"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:self="clr-namespace:ServerServiceInterface;assembly=ServerServiceInterface"
+        Title="Print Barcode" Height="547" Width="979.4" FontFamily="Century Gothic" Background="#FF101040" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Topmost="True" TextOptions.TextFormattingMode="Display" FontSize="14" Foreground="White" FontWeight="SemiBold" BorderBrush="White" BorderThickness="2" ResizeMode="NoResize">
+    <Window.Resources>
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Foreground" Value="#FFFFFFFF"></Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="FontWeight" Value="Bold" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="0,0,0,0" HorizontalAlignment="Right">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="233*"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="From" HorizontalAlignment="Left" Margin="-951,18,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.214,0.16" Foreground="White" Width="81" />
+        <DatePicker x:Name="mDTPStartDate" SelectedDate="{x:Static sys:DateTime.Now}" HorizontalAlignment="Left" Margin="-865,20,0,0" VerticalAlignment="Top" Width="134" IsTodayHighlighted="True" TabIndex="0" Background="#FF101040" Foreground="White" SelectedDateChanged="mDTPStartDate_SelectedDateChanged">
+            <DatePicker.Resources>
+                <Style TargetType="{x:Type DatePickerTextBox}">
+                    <Setter Property="Background" Value="#FF101040"/>
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
+        <Label Content="To" HorizontalAlignment="Left" Margin="-716,20,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.214,0.16" Foreground="White" Width="81"/>
+        <DatePicker x:Name="mDTPEndDate" SelectedDate="{x:Static sys:DateTime.Now}" HorizontalAlignment="Left" Margin="-630,20,0,0" VerticalAlignment="Top" Width="134" IsTodayHighlighted="True" TabIndex="0" Background="#FF101040" Foreground="White" SelectedDateChanged="mDTPEndDate_SelectedDateChanged">
+            <DatePicker.Resources>
+                <Style TargetType="{x:Type DatePickerTextBox}">
+                    <Setter Property="Background" Value="#FF101040"/>
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
+        <Label Content="Product" HorizontalAlignment="Left" Margin="-472,20,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.214,0.16" Foreground="White" Width="92"/>
+        <ComboBox x:Name="mComboProduct" Style="{DynamicResource ComboBoxAccountsStyle}" Background="#FF101040" Foreground="#FFFFFFFF" HorizontalAlignment="Left" Margin="-375,22,0,0" VerticalAlignment="Top" Width="191" Height="25" IsEditable="True" TabIndex="0" RenderTransformOrigin="0.5,0.5" TextBoxBase.TextChanged="mComboProduct_SelectionChanged" >
+            <ComboBox.Resources>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <Setter Property="Background" Value="#FF101040"/>
+                    <Setter Property="Foreground" Value="#FFFFFFFF"/>
+                </Style>
+                <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="Blue"/>
+            </ComboBox.Resources>
+        </ComboBox>
+
+        <DataGrid x:Name="mDataGrid" ItemsSource="{Binding mGridContent}" CanUserAddRows="False" HeadersVisibility="Column"  CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" EnableColumnVirtualization="False" EnableRowVirtualization="False" AutoGenerateColumns="False" HorizontalAlignment="Left" Margin="-948,92,0,0" VerticalAlignment="Top" Width="942" Height="284" FontWeight="Normal" Foreground="White" Background="#FF101040" ColumnHeaderHeight="30" HorizontalScrollBarVisibility="Auto">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="#FF101040"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="Background" Value="#FF101040"/>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </DataGrid.RenderTransform>
+
+            <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.Header>
+                        <CheckBox Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Select, UpdateSourceTrigger=PropertyChanged}"  Checked="SubCheckBox_Checked" Unchecked="SubCheckBox_Unchecked"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Product" Binding="{Binding Product}" IsReadOnly="True" Width="200"/>
+                <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" IsReadOnly="True" Width="200"/>
+                <DataGridTextColumn Header="Expiry Date" Binding="{Binding ExpiryDate}" IsReadOnly="True" Width="100"/>
+                <DataGridTextColumn Header="Batch" Binding="{Binding Batch}" IsReadOnly="True" Width="100"/>
+                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity,StringFormat=N3}"  IsReadOnly="False" Width="120">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Purchase Rate" Binding="{Binding PurchaseRate,StringFormat=N2}"  IsReadOnly="True" Width="120">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="Interstate Rate" Binding="{Binding InterstateRate,StringFormat=N2}"  IsReadOnly="True" Width="120">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="Wholesale Rate" Binding="{Binding WholesaleRate,StringFormat=N2}"  IsReadOnly="True" Width="120">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="MRP" Binding="{Binding MRP,StringFormat=N2}"  IsReadOnly="True" Width="120">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="ProductCode" Binding="{Binding ProductCode}"  IsReadOnly="True" Visibility="Hidden"/>
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <Label Name="mLabelTotalNo" Content="0" HorizontalAlignment="Left" Margin="-365,441,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.214,0.16" Foreground="White" Width="198" Height="57" FontWeight="Bold" FontSize="32" />
+
+        <Button x:Name="mButtonPrint" Content="Print" HorizontalAlignment="Left" Margin="-948,463,0,0" VerticalAlignment="Top" Width="114" Height="35"  TabIndex="1"/>
+        <Button Name="mButtonClose" Content="Close" HorizontalAlignment="Left" Margin="-120,463,0,0" VerticalAlignment="Top" Width="114" Height="35" Click="mButtonClose_Click" TabIndex="10" IsCancel="True"/>
+
+    </Grid>
+</Window>

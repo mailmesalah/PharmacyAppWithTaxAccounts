@@ -1,0 +1,39 @@
+Private Sub printBarcode(inputString As String, x As Long, y As Long, height As Long)
+    Dim lineTop As Integer      'top of the line
+    Dim lineBottom As Integer   'bottom of the line
+    Dim leftSide As Integer     'left side of barcode
+    Dim zerosWidth As Integer  'length of the narrow bars
+    Dim binArray As Integer     'retrievs the binary code for the current letter
+    Dim i, j, k As Integer
+    Dim newInputString As String      'hold the modified string
+    
+    lineTop = y
+    lineBottom = y + height
+    leftSide = x
+    zerosWidth = 20
+    
+    newInputString = "*" + StrConv(inputString, vbUpperCase) + "*"  'add start and stop char changes string to uppercase
+    
+    For i = 1 To Len(newInputString)  'loops through each char of the string
+        
+        binArray = integerValueOfCharactes(Mid(newInputString, i, 1))
+        
+        For j = 1 To Len(charArray(binArray))   'loops through the binary array
+            
+            For k = 1 To IIf(CInt(Mid(charArray(binArray), j, 1)) = 0, 1 * zerosWidth, 2 * zerosWidth) 'For 0 (1*zerosWidth) and for 1 (2*zerosWidth)
+                
+                If j Mod 2 Then  'odd char of the string are black, even are white
+                    Printer.Line (leftSide, lineTop)-(leftSide, lineBottom), vbBlack
+                Else
+                    Printer.Line (leftSide, lineTop)-(leftSide, lineBottom), vbWhite
+                End If
+                leftSide = leftSide + 1
+            Next k
+        Next j
+        
+        For j = 1 To zerosWidth  'adds a white space between char
+            Printer.Line (leftSide, lineTop)-(leftSide, lineBottom), vbWhite
+            leftSide = leftSide + 1
+        Next j
+    Next i
+End Sub
